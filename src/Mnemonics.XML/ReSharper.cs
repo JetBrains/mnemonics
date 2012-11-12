@@ -206,6 +206,18 @@ public partial class TemplatesExportTemplateContext {
             this.cSharpContextField = value;
         }
     }
+  
+    private TemplatesExportTemplateContextCSharpContext visualBasicContextField;
+    
+    /// <remarks/>
+    public TemplatesExportTemplateContextCSharpContext VisualBasicContext {
+        get {
+            return this.visualBasicContextField;
+        }
+        set {
+            this.visualBasicContextField = value;
+        }
+    }
 }
 
 /// <remarks/>
@@ -215,6 +227,40 @@ public partial class TemplatesExportTemplateContext {
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
 public partial class TemplatesExportTemplateContextCSharpContext {
+    
+    private string contextField;
+    
+    private decimal minimumLanguageVersionField;
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlAttributeAttribute()]
+    public string context {
+        get {
+            return this.contextField;
+        }
+        set {
+            this.contextField = value;
+        }
+    }
+    
+    /// <remarks/>
+    [System.Xml.Serialization.XmlAttributeAttribute()]
+    public decimal minimumLanguageVersion {
+        get {
+            return this.minimumLanguageVersionField;
+        }
+        set {
+            this.minimumLanguageVersionField = value;
+        }
+    }
+}
+/// <remarks/>
+[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.1")]
+[System.SerializableAttribute()]
+[System.Diagnostics.DebuggerStepThroughAttribute()]
+[System.ComponentModel.DesignerCategoryAttribute("code")]
+[System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
+public partial class TemplatesExportTemplateContextVisualBasicContext {
     
     private string contextField;
     
