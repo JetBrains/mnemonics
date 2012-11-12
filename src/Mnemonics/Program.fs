@@ -11,6 +11,13 @@ type StringBuilder with
   member x.AppendStrings (ss:string list) =
     for s in ss do ignore <| x.Append s
 
+let rec pairs l = seq {  
+  match l with 
+  | h::t -> for e in l do yield h, e
+            yield! pairs t
+  | _ -> () } 
+
+let newGuid() = Guid.NewGuid().ToString().ToLower()
 
 /// Renders an XML template for C#, VB.NET and F#
 let renderReSharper() =
@@ -61,12 +68,11 @@ let renderReSharper() =
 
   // first, process structures
   for (s,exprs) in cSharpStructureTemplates do
-  begin
     let t = new TemplatesExportTemplate(shortcut=s)
     let vars = new List<TemplatesExportTemplateVariable>();
     t.description <- String.Empty
     t.reformat <- "True"
-    t.uid <- Guid.NewGuid().ToString().ToLower()
+    t.uid <- newGuid()
     t.text <- printExpressions exprs vars
 
     t.Context <- new TemplatesExportTemplateContext()
@@ -77,13 +83,13 @@ let renderReSharper() =
       )
     t.Variables <- vars.ToArray()
     templates.Add t
-  end
+  done
 
   // now process members
   for (s,doc,exprs) in cSharpMemberTemplates do
     // simple types
     for (tk,tv) in dotNetSimpleTypes do
-      let t = new TemplatesExportTemplate(shortcut=s+tk)
+      let t = new TemplatesExportTemplate(shortcut=(s+tk))
       let vars = new List<TemplatesExportTemplateVariable>()
       t.description <- printExpressions doc vars
       t.reformat <- "True"
@@ -92,7 +98,7 @@ let renderReSharper() =
       t.text <- (printExpressions exprs vars)
                 .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
                 
-      t.uid <- Guid.NewGuid().ToString().ToLower()
+      t.uid <- newGuid()
 
       t.Context <- new TemplatesExportTemplateContext()
       t.Context.CSharpContext  <- new TemplatesExportTemplateContextCSharpContext
@@ -116,7 +122,7 @@ let renderReSharper() =
           t0.shortenQualifiedReferences <- "True"
 
           t0.text <- (printExpressions exprs vars0).Replace("$typename$", gv + "<" + tv + ">")
-          t0.uid <- Guid.NewGuid().ToString().ToLower()
+          t0.uid <- newGuid()
           t0.Context <- new TemplatesExportTemplateContext()
           t0.Context.CSharpContext  <- new TemplatesExportTemplateContextCSharpContext
             (
@@ -126,7 +132,26 @@ let renderReSharper() =
           t0.Variables <- vars0.ToArray()
           templates.Add t0
         done
-      | 2 -> ()
+      | 2 ->
+        for ((tk0,tv0),(tk1,tv1)) in pairs dotNetSimpleTypes do
+          let t = new TemplatesExportTemplate(shortcut=s+gk+tk0+tk1)
+          let vars = List<TemplatesExportTemplateVariable>()
+          let genericArgs = gv + "<" + tv0 + "," + tv1 + ">"
+          t.description <- (printExpressions doc vars).Replace("$typename$", genericArgs)
+          t.reformat <- "True"
+          t.shortenQualifiedReferences <- "True"
+
+          t.text <- (printExpressions exprs vars).Replace("$typename$", genericArgs)
+          t.uid <- newGuid()
+          t.Context <- new TemplatesExportTemplateContext()
+          t.Context.CSharpContext <- new TemplatesExportTemplateContextCSharpContext
+            (
+              context = "TypeMember",
+              minimumLanguageVersion = 2.0M
+            )
+          t.Variables <- vars.ToArray()
+          templates.Add t
+        done
       | _ -> raise <| new Exception("We don't support this few/many args")
     done
   done
@@ -139,6 +164,8 @@ let renderReSharper() =
   use fs = new FileStream(filename, FileMode.Create, FileAccess.Write)
   xs.Serialize(fs, te)
 
+  printfn "%A ReSharper templates exported" (te.Template.Length)
+
 /// Renders a JAR for Java, Kotlin and Scala
 let renderJava() =
   ()
@@ -147,4 +174,5 @@ let renderJava() =
 let main argv = 
     renderReSharper()
     renderJava()
+    Console.ReadKey() |> ignore
     0
