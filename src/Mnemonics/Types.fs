@@ -7,6 +7,6 @@ type Expression =
   | Constant of string * string
   | Scope of Expression list
 
-let public endConstant = Constant ("END", "")
-
+let space = Text " "
+let endConstant = Constant ("END", "")
 let semiColon = Text ";"

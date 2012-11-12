@@ -31,14 +31,18 @@ let renderReSharper() =
         v.expression <- value
         vars.Add(v)
         builder.AppendStrings ["$"; name; "$"]
-      
+        impl t builder
+
       | Constant(name,text) :: t ->
-        let v = new TemplatesExportTemplateVariable()
-        v.name <- name
-        v.initialRange <- 0
-        v.expression <- "constant(\"" + text + "\")"
-        vars.Add(v)
+        if name <> "END" then begin
+          let v = new TemplatesExportTemplateVariable()
+          v.name <- name
+          v.initialRange <- 0
+          v.expression <- "constant(\"" + text + "\")"
+          vars.Add(v)
+        end
         builder.AppendStrings ["$"; name; "$"]
+        impl t builder
       
       | Scope(content) :: t ->
         builder.AppendString "{"
@@ -76,11 +80,9 @@ let renderReSharper() =
   end
 
   // now process members
-  let fixTypeName (s:string) =
-    s.Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
-   
   for (s,doc,exprs) in cSharpMemberTemplates do
-    for (tk,tv) in List.concat [dotNetPrimitiveTypeShorthands; dotNetReferenceTypeShorthands] do
+    // simple types
+    for (tk,tv) in dotNetSimpleTypes do
       let t = new TemplatesExportTemplate(shortcut=s+tk)
       let vars = new List<TemplatesExportTemplateVariable>()
       t.description <- printExpressions doc vars
@@ -100,6 +102,32 @@ let renderReSharper() =
         )
       t.Variables <- vars.ToArray()
       templates.Add t
+    done
+
+    // generic types - these need additional args for the generic params
+    for (gk,gv,genArgCount) in dotNetGenericTypes do
+      match genArgCount with
+      | 1 ->
+        for (tk,tv) in dotNetSimpleTypes do
+          let t0 = new TemplatesExportTemplate(shortcut=s+gk+tk)
+          let vars0 = new List<TemplatesExportTemplateVariable>()
+          t0.description <- (printExpressions doc vars0).Replace("$typename$", gv + "<" + tv + ">")
+          t0.reformat <- "True"
+          t0.shortenQualifiedReferences <- "True"
+
+          t0.text <- (printExpressions exprs vars0).Replace("$typename$", gv + "<" + tv + ">")
+          t0.uid <- Guid.NewGuid().ToString().ToLower()
+          t0.Context <- new TemplatesExportTemplateContext()
+          t0.Context.CSharpContext  <- new TemplatesExportTemplateContextCSharpContext
+            (
+              context = "TypeMember",
+              minimumLanguageVersion = 2.0M
+            )
+          t0.Variables <- vars0.ToArray()
+          templates.Add t0
+        done
+      | 2 -> ()
+      | _ -> raise <| new Exception("We don't support this few/many args")
     done
   done
   

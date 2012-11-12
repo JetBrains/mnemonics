@@ -2,7 +2,7 @@
 
 open Types
 
-let dotNetPrimitiveTypeShorthands =
+let dotNetSimpleTypes =
   [
     ("b", "bool")
     ("c", "char")
@@ -18,14 +18,12 @@ let dotNetPrimitiveTypeShorthands =
     ("t", "System.DateTime")
   ]
 
-let dotNetReferenceTypeShorthands =
+let dotNetGenericTypes =
   [
-    ("x",  "System.Exception")
-    ("sb", "System.Text.StringBuilder")
-    ("l.", "System.Collections.Generic.List<T>")
-    ("h",  "System.Collections.Generic.HashSet<T>")
-    ("di", "System.Collections.Generic.Dictionary<T,U>")
-    ("~",  "System.Collections.Generic.IEnumerable<T>")
+    ("l.", "System.Collections.Generic.List", 1)
+    ("h.",  "System.Collections.Generic.HashSet", 1)
+    ("di.", "System.Collections.Generic.Dictionary", 2)
+    ("~",  "System.Collections.Generic.IEnumerable", 1)
   ]
 
 let cSharpStructureTemplates =
@@ -196,7 +194,7 @@ let cSharpMemberTemplates =
         FixedType
       ],
       [
-        Text "public void "
+        Text "public s void "
         Constant ("methodname", "MyMethod")
         Text "()"
         Scope [
@@ -213,6 +211,7 @@ let cSharpMemberTemplates =
       [
         Text "public "
         FixedType
+        space
         Constant("propname", "MyProperty")
         Text "{ get; set; }"
         endConstant
@@ -228,6 +227,7 @@ let cSharpMemberTemplates =
       [
         Text "public "
         FixedType
+        space
         Constant("propname", "MyProperty")
         Text "{ get; private set; }"
         endConstant
