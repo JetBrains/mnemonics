@@ -12,11 +12,11 @@ type StringBuilder with
   member x.AppendStrings (ss:string list) =
     for s in ss do ignore <| x.Append s
 
-let rec pairs l = seq {  
-  match l with 
-  | h::t -> for e in l do yield h, e
-            yield! pairs t
-  | _ -> () } 
+let rec pairs l = seq {
+  for a in l do
+    for b in l do 
+      yield (a,b)
+  }
 
 let newGuid() = Guid.NewGuid().ToString().ToLower()
 
