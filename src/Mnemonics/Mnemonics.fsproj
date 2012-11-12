@@ -53,6 +53,8 @@
     <Compile Include="Types.fs" />
     <Compile Include="Java.fs" />
     <Compile Include="DotNet.fs" />
+    <Compile Include="CSharp.fs" />
+    <Compile Include="VB.NET.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
   </ItemGroup>

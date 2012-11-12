@@ -5,6 +5,7 @@ open System.Text
 open System.Xml.Serialization
 open Types
 open DotNet
+open CSharp
 
 type StringBuilder with
   member x.AppendString (s:string) = ignore <| x.Append s
@@ -66,6 +67,18 @@ let renderReSharper() =
     impl expressions sb
     sb.ToString();
 
+  let csContext = 
+    new TemplatesExportTemplateContextCSharpContext (
+      context = "TypeMember, TypeAndNamespace",
+      minimumLanguageVersion = 2.0M
+    )
+    
+  let vbContext = 
+    new TemplatesExportTemplateContextVisualBasicContext (
+      context = "TypeMember, TypeAndNamespace",
+      minimumLanguageVersion = 2.0M
+    )
+
   // first, process structures
   for (s,exprs) in cSharpStructureTemplates do
     let t = new TemplatesExportTemplate(shortcut=s)
@@ -75,80 +88,56 @@ let renderReSharper() =
     t.uid <- newGuid()
     t.text <- printExpressions exprs vars
 
-    t.Context <- new TemplatesExportTemplateContext()
-    t.Context.CSharpContext <- new TemplatesExportTemplateContextCSharpContext
-      (
-        context = "TypeMember, TypeAndNamespace",
-        minimumLanguageVersion = 2.0M
-      )
+    t.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
     t.Variables <- vars.ToArray()
     templates.Add t
   done
 
   // now process members
   for (s,doc,exprs) in cSharpMemberTemplates do
-    // simple types
-    for (tk,tv) in dotNetSimpleTypes do
+    // simple types; methods can be void
+    let types = (if Char.ToLower(s.Chars(0)) ='m' then ("", "void") :: csharpTypes else csharpTypes)
+    for (tk,tv) in types do
       let t = new TemplatesExportTemplate(shortcut=(s+tk))
       let vars = new List<TemplatesExportTemplateVariable>()
       t.description <- printExpressions doc vars
       t.reformat <- "True"
       t.shortenQualifiedReferences <- "True"
-
       t.text <- (printExpressions exprs vars)
                 .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
-                
       t.uid <- newGuid()
-
-      t.Context <- new TemplatesExportTemplateContext()
-      t.Context.CSharpContext  <- new TemplatesExportTemplateContextCSharpContext
-        (
-          context = "TypeMember",
-          minimumLanguageVersion = 2.0M
-        )
+      t.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
       t.Variables <- vars.ToArray()
       templates.Add t
     done
 
-    // generic types - these need additional args for the generic params
+    // generically specialized types
     for (gk,gv,genArgCount) in dotNetGenericTypes do
       match genArgCount with
       | 1 ->
-        for (tk,tv) in dotNetSimpleTypes do
+        for (tk,tv) in csharpTypes do
           let t0 = new TemplatesExportTemplate(shortcut=s+gk+tk)
           let vars0 = new List<TemplatesExportTemplateVariable>()
           t0.description <- (printExpressions doc vars0).Replace("$typename$", gv + "<" + tv + ">")
           t0.reformat <- "True"
           t0.shortenQualifiedReferences <- "True"
-
           t0.text <- (printExpressions exprs vars0).Replace("$typename$", gv + "<" + tv + ">")
           t0.uid <- newGuid()
-          t0.Context <- new TemplatesExportTemplateContext()
-          t0.Context.CSharpContext  <- new TemplatesExportTemplateContextCSharpContext
-            (
-              context = "TypeMember",
-              minimumLanguageVersion = 2.0M
-            )
+          t0.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
           t0.Variables <- vars0.ToArray()
           templates.Add t0
         done
       | 2 ->
-        for ((tk0,tv0),(tk1,tv1)) in pairs dotNetSimpleTypes do
+        for ((tk0,tv0),(tk1,tv1)) in pairs csharpTypes do
           let t = new TemplatesExportTemplate(shortcut=s+gk+tk0+tk1)
           let vars = List<TemplatesExportTemplateVariable>()
           let genericArgs = gv + "<" + tv0 + "," + tv1 + ">"
           t.description <- (printExpressions doc vars).Replace("$typename$", genericArgs)
           t.reformat <- "True"
           t.shortenQualifiedReferences <- "True"
-
           t.text <- (printExpressions exprs vars).Replace("$typename$", genericArgs)
           t.uid <- newGuid()
-          t.Context <- new TemplatesExportTemplateContext()
-          t.Context.CSharpContext <- new TemplatesExportTemplateContextCSharpContext
-            (
-              context = "TypeMember",
-              minimumLanguageVersion = 2.0M
-            )
+          t.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
           t.Variables <- vars.ToArray()
           templates.Add t
         done
