@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="TemplatesExport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="Template">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="0" name="Context">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="CSharpContext">
+                      <xs:complexType>
+                        <xs:attribute name="context" type="xs:string" use="required" />
+                        <xs:attribute name="minimumLanguageVersion" type="xs:decimal" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="Categories" />
+              <xs:element name="Variables">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="unbounded" name="Variable">
+                      <xs:complexType>
+                        <xs:attribute name="name" type="xs:string" use="required" />
+                        <xs:attribute name="expression" type="xs:string" use="required" />
+                        <xs:attribute name="initialRange" type="xs:unsignedByte" use="required" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="CustomProperties" />
+            </xs:sequence>
+            <xs:attribute name="uid" type="xs:string" use="required" />
+            <xs:attribute name="shortcut" type="xs:string" use="required" />
+            <xs:attribute name="description" type="xs:string" use="required" />
+            <xs:attribute name="text" type="xs:string" use="required" />
+            <xs:attribute name="reformat" type="xs:string" use="required" />
+            <xs:attribute name="shortenQualifiedReferences" type="xs:string" use="required" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="family" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

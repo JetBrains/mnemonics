@@ -1,0 +1,54 @@
+
+#OS junk files
+[Tt]humbs.db
+*.DS_Store
+
+#Visual Studio files
+*.[Oo]bj
+*.exe
+*.pdb
+*.user
+*.aps
+*.pch
+*.vspscc
+*.vssscc
+*_i.c
+*_p.c
+*.ncb
+*.suo
+*.tlb
+*.tlh
+*.bak
+*.[Cc]ache
+*.ilk
+*.log
+*.lib
+*.sbr
+*.sdf
+*.opensdf
+*.tmp
+ipch/
+obj/
+[Bb]in
+[Bb]indebug
+[Bb]intests
+[Dd]ebug*/
+[Rr]elease*/
+[Dd]istrib
+Ankh.NoLoad
+
+Build/
+
+#Tooling
+_ReSharper*/
+*.resharper
+[Tt]est[Rr]esult*
+
+#Subversion files
+.svn
+
+# Office Temp Files
+~$*
+
+#generated parser files should not be added!
+/src/fsharper/Psi.FSharp/src/Gen
