@@ -54,7 +54,7 @@ let cSharpStructureTemplates =
       "i",
       [
         Text "public interface "
-        Constant ("INTERFACENAME", "MyInterface")
+        Constant ("INTERFACENAME", "IMyInterface")
         Scope [ endConstant ]
       ]
     )

@@ -11,3 +11,6 @@ type Expression =
 let space = Text " "
 let endConstant = Constant ("END", "")
 let semiColon = Text ";"
+let className = Constant ("CLASSNAME", "MyClass")
+let interfaceName = Constant ("INTERFACENAME", "IMyInterface")
+let propName = Constant("propname", "MyProperty")

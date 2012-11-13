@@ -240,6 +240,7 @@ let renderJava() =
     t.toReformat <- true
     t.toShortenFQNames <- true
     t.context <- javaDeclContext
+    t.value <- (printExpressions exprs vars String.Empty)
     templates.Add t
   done
 
@@ -262,7 +263,7 @@ let renderJava() =
   let jarFile = new ZipFile(jarFileName)
   let templatesDir = jarFile.AddDirectory(".\\jar")
   jarFile.Save()
-  ()
+  printfn "%A IDEA templates exported" templates.Count
 
 [<EntryPoint>]
 let main argv = 

@@ -34,4 +34,164 @@ let javaStructureTemplates =
         ]
       ]
     )
+    (
+      "C",
+      [
+        Text "public static class "
+        Constant ("CLASSNAME", "MyClass")
+        Scope [
+          endConstant
+        ]
+      ]
+    )
+    (
+      "a",
+      [
+        Text "public abstract class "
+        className
+        Scope [ endConstant ]
+      ]
+    )
+    (
+      "i",
+      [
+        Text "public interface "
+        interfaceName
+        Scope [ endConstant ]
+      ]
+    )
+    (
+      "e",
+      [
+        Text "public enum "
+        Constant ("ENUMNAME", "MyEnum")
+        Scope [ endConstant ]
+      ]
+    )
+  ]
+
+let javaMemberTemplates =
+  [
+    (
+      "v",
+      [
+        Text "A field of type "
+        FixedType
+      ],
+      [
+        Text "private "
+        FixedType
+        Text " "
+        Constant ("fieldname", "fieldname")
+        semiColon
+      ]
+    )
+    (
+      "V",
+      [
+        Text "A static field of type "
+        FixedType
+      ],
+      [
+        Text "private static "
+        FixedType
+        Text " "
+        Constant ("fieldname", "fieldname")
+        semiColon
+      ]
+    )
+    (
+      "n",
+      [
+        Text "A field of type "
+        FixedType
+        Text " initialized to the default value."
+      ],
+      [
+        Text "private "
+        FixedType
+        Text " "
+        Constant ("fieldname", "fieldname")
+        Text " = "
+        DefaultValue
+        semiColon
+      ]
+    )
+    (
+      "m",
+      [
+        Text "A method that returns a(n) "
+        FixedType
+      ],
+      [
+        Text "public"
+        space
+        FixedType
+        space
+        Constant ("methodname", "MyMethod")
+        Text "()"
+        Scope [
+          endConstant
+        ]
+      ]
+    )
+    (
+      "M",
+      [
+        Text "A static method that returns a(n) "
+        FixedType
+      ],
+      [
+        Text "public static "
+        FixedType
+        space
+        Constant ("methodname", "MyMethod")
+        Text "()"
+        Scope [
+          endConstant
+        ]
+      ]
+    )
+    (
+      "p",
+      [
+        Text "A property of type "
+        FixedType
+        Text " with generated getter/setter methods."
+      ],
+      [
+        Text "private "
+        FixedType
+        space
+        propName
+        semiColon
+
+        Text "public "
+        FixedType
+        space
+        Text "get"
+        propName
+        Text "()"
+        Scope [
+          Text "return "
+          propName
+          semiColon
+        ]
+
+        Text "public void set"
+        propName
+        Text "("
+        FixedType
+        space
+        propName
+        Text ")"
+        Scope [
+          Text "this."
+          propName
+          Text " = "
+          propName
+          semiColon
+        ]
+      ]
+    )
   ]
