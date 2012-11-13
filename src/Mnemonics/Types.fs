@@ -6,7 +6,7 @@ type Expression =
   | Variable of string * string // variable, result of LT function eval
   | Constant of string * string // constant, has a default value
   | Scope of Expression list // curly-brace-delimited scope
-  | DefaultValue of string // default value, taken from type enumeration
+  | DefaultValue // default value, taken from type enumeration
 
 let space = Text " "
 let endConstant = Constant ("END", "")

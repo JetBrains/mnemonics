@@ -2,16 +2,36 @@
 
 open Types
 
-let dotNetPrimitiveTypeShorthands =
+let javaPrimitiveTypes =
   [
     ("c", "char")
     ("f", "float")
     ("by", "byte")
     ("d", "double")
     ("i", "int")
-    ("m", "decimal")
-    ("s", "string")
+    ("s", "String")
     ("l", "long")
-    ("u", "uint")
-    ("t", "System.DateTime")
+    ("t", "java.lang.Date")
+  ]
+
+let javaGenericTypes =
+  [
+    ("l.", "java.util.ArrayList", 1)
+    ("h.", "java.util.HasSet", 1)
+    ("di.", "java.util.HashMap", 2)
+    ("~", "java.lang.Iterable", 1) // <-- somewhat unnecessary, unlike in .NET
+  ]
+
+let javaStructureTemplates =
+  [
+    (
+      "c",
+      [
+        Text "public class "
+        Constant ("CLASSNAME", "MyClass")
+        Scope [
+          endConstant
+        ]
+      ]
+    )
   ]

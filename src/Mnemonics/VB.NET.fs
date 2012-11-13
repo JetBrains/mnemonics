@@ -18,6 +18,7 @@ let vbTypes =
     ("t", "System.DateTime")
   ]
 
+// note: vb structures are '
 let vbStructureTemplates =
   [
     (
@@ -25,8 +26,6 @@ let vbStructureTemplates =
       [
         Text "Public Class "
         Constant ("CLASSNAME", "MyClass")
-        endConstant
-        Text "End Class"
       ]
     )
     (
@@ -34,8 +33,6 @@ let vbStructureTemplates =
       [
         Text "Public MustInherit Class "
         Constant ("CLASSNAME", "MyClass")
-        endConstant
-        Text "End Class"
       ]
     )
     (
@@ -43,8 +40,6 @@ let vbStructureTemplates =
       [
         Text "Public Module "
         Constant ("MODULENAME", "MyModule")
-        endConstant
-        Text "End Class"
       ]
     )
   ]

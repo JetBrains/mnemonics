@@ -3,10 +3,12 @@ open System.Collections.Generic
 open System.IO
 open System.Text
 open System.Xml.Serialization
+open Ionic.Zip
 open Types
 open DotNet
 open CSharp
 open VB
+open Java
 
 type StringBuilder with
   member x.AppendString (s:string) = ignore <| x.Append s
@@ -33,7 +35,7 @@ let renderReSharper() =
         builder.AppendString txt
         impl t builder
 
-      | DefaultValue(defValue) :: t ->
+      | DefaultValue :: t ->
         builder.AppendString defValue
         impl t builder
 
@@ -177,6 +179,89 @@ let renderReSharper() =
 
 /// Renders a JAR for Java, Kotlin and Scala
 let renderJava() =
+  let javaDeclContext =
+    [| new templateSetTemplateOption(name="JAVA_DECLARATION",value=true) |]
+
+  let printExpressions expressions (vars:List<templateSetTemplateVariable>) defValue =
+    let rec impl exps (builder:StringBuilder) =
+      match exps with
+      | Text(txt) :: t ->
+        builder.AppendString txt
+        impl t builder
+
+      | DefaultValue :: t ->
+        builder.AppendString defValue
+        impl t builder
+
+      | Variable(name, value) :: t ->
+        let v = new templateSetTemplateVariable()
+        v.name <- name
+        v.expression <- value
+        v.alwaysStopAt <- true
+        vars.Add(v)
+        builder.AppendStrings ["$"; name; "$"]
+        impl t builder
+
+      | Constant(name,text) :: t ->
+        if name <> "END" then begin
+          let v = new templateSetTemplateVariable()
+          v.name <- name
+          v.defaultValue <- text
+          v.alwaysStopAt <- true
+          vars.Add(v)
+        end
+        builder.AppendStrings ["$"; name; "$"]
+        impl t builder
+      
+      | Scope(content) :: t ->
+        builder.AppendString "{"
+        impl content builder
+        builder.AppendString "}"
+        impl t builder
+
+      | FixedType :: t ->
+        builder.AppendString "$typename$" // replaced later
+        impl t builder
+      
+      | [] -> ()
+    let sb = new StringBuilder()
+    impl expressions sb
+    sb.ToString();
+
+
+  let ts = new templateSet()
+  let templates = new List<templateSetTemplate>()
+  ts.group <- "user" // todo: investigate 'properietary' groups
+  
+  for (s, exprs) in javaStructureTemplates do
+    let t = new templateSetTemplate(name=s)
+    let vars = new List<templateSetTemplateVariable>()
+    t.description <- String.Empty
+    t.toReformat <- true
+    t.toShortenFQNames <- true
+    t.context <- javaDeclContext
+    templates.Add t
+  done
+
+  ts.template <- templates.ToArray()
+
+  let filename = ".\\jar\\templates\\user.xml"
+  // make sure directory exists
+  Directory.CreateDirectory(".\\jar") |> ignore
+  Directory.CreateDirectory(".\\jar\\templates") |> ignore
+  let xs = new XmlSerializer(ts.GetType())
+  use fs = new FileStream(filename, FileMode.Create, FileAccess.Write)
+  xs.Serialize(fs, ts)
+
+  let ideaFileName = "IntelliJ IDEA Global Settings"
+  File.WriteAllText(".\\jar\\" + ideaFileName, String.Empty)
+
+  // now wrap it in a jar. use of 3rd-party zipper unavoidable
+  let jarFileName = "IdeaMnemonics.jar"
+  File.Delete jarFileName
+  let jarFile = new ZipFile(jarFileName)
+  let templatesDir = jarFile.AddDirectory(".\\jar")
+  jarFile.Save()
   ()
 
 [<EntryPoint>]
