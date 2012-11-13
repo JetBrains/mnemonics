@@ -4,18 +4,18 @@ open Types
 
 let csharpTypes =
   [
-    ("b", "bool")
-    ("c", "char")
-    ("f", "float")
-    ("by", "byte")
-    ("d", "double")
-    ("i", "int")
-    ("m", "decimal")
-    ("s", "string")
-    ("l", "long")
-    ("u", "uint")
-    ("g", "System.Guid")
-    ("t", "System.DateTime")
+    ("b", "bool", "false")
+    ("c", "char", "0")
+    ("f", "float", "0.0f")
+    ("by", "byte", "0")
+    ("d", "double", "0.0")
+    ("i", "int", "0")
+    ("m", "decimal", "0M")
+    ("s", "string", "\"\"")
+    ("l", "long", "0")
+    ("u", "uint", "0")
+    ("g", "System.Guid", "System.Guid.NewGuid()")
+    ("t", "System.DateTime", "DateTime.Now")
   ]
 
 let cSharpStructureTemplates =
@@ -133,6 +133,8 @@ let cSharpMemberTemplates =
         Text " "
         Constant ("fieldname", "fieldname")
         Text " = "
+        DefaultValue
+        semiColon
       ]
     )
     (
@@ -148,6 +150,8 @@ let cSharpMemberTemplates =
         Text " "
         Constant ("fieldname", "fieldname")
         Text " = "
+        DefaultValue
+        semiColon
       ]
     )
     (

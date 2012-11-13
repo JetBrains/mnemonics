@@ -1,11 +1,12 @@
 ﻿module Types
 
 type Expression =
-  | Text of string
-  | FixedType
-  | Variable of string * string
-  | Constant of string * string
-  | Scope of Expression list
+  | Text of string // plain text, output as-is
+  | FixedType // primary expression type, substituted
+  | Variable of string * string // variable, result of LT function eval
+  | Constant of string * string // constant, has a default value
+  | Scope of Expression list // curly-brace-delimited scope
+  | DefaultValue of string // default value, taken from type enumeration
 
 let space = Text " "
 let endConstant = Constant ("END", "")
