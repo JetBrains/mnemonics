@@ -55,9 +55,13 @@
   <ItemGroup>
     <Compile Include="Types.fs" />
     <Compile Include="Java.fs" />
+    <Compile Include="Kotlin.fs" />
     <Compile Include="DotNet.fs" />
     <Compile Include="CSharp.fs" />
     <Compile Include="VB.NET.fs" />
+    <Compile Include="Python.fs" />
+    <Compile Include="Ruby.fs" />
+    <Compile Include="ObjectiveC.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
   </ItemGroup>
