@@ -2,6 +2,12 @@
 
 open Types
 
+let csContext = 
+  new TemplatesExportTemplateContextCSharpContext (
+    context = "TypeMember, TypeAndNamespace",
+    minimumLanguageVersion = 2.0M
+  )
+
 let csharpTypes =
   [
     ("b", "bool", "false")
@@ -15,7 +21,7 @@ let csharpTypes =
     ("l", "long", "0")
     ("u", "uint", "0")
     ("g", "System.Guid", "System.Guid.NewGuid()")
-    ("t", "System.DateTime", "DateTime.Now")
+    ("t", "System.DateTime", "System.DateTime.UtcNow")
   ]
 
 let cSharpStructureTemplates =
@@ -99,7 +105,7 @@ let cSharpMemberTemplates =
         FixedType
       ],
       [
-        Text "private "
+        Text "private readonly "
         Constant ("type", "type")
         Text " "
         Constant ("fieldname", "fieldname")

@@ -207,10 +207,10 @@ public partial class TemplatesExportTemplateContext {
         }
     }
   
-    private TemplatesExportTemplateContextVisualBasicContext visualBasicContextField;
+    private TemplatesExportTemplateContextVBContext visualBasicContextField;
     
     /// <remarks/>
-    public TemplatesExportTemplateContextVisualBasicContext VisualBasicContext {
+    public TemplatesExportTemplateContextVBContext VBContext {
         get {
             return this.visualBasicContextField;
         }
@@ -260,7 +260,7 @@ public partial class TemplatesExportTemplateContextCSharpContext {
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
-public partial class TemplatesExportTemplateContextVisualBasicContext {
+public partial class TemplatesExportTemplateContextVBContext {
     
     private string contextField;
     

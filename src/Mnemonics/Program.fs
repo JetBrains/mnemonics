@@ -30,6 +30,9 @@ let renderReSharper() =
   let te = new TemplatesExport(family = "Live Templates")
   let templates = new List<TemplatesExportTemplate>()
 
+  // debugging switches :)
+  let renderCSharp, renderVBNET = false, true
+
   let printExpressions expressions (vars:List<TemplatesExportTemplateVariable>) defValue =
     let rec impl exps (builder:StringBuilder) =
       match exps with
@@ -76,98 +79,147 @@ let renderReSharper() =
     impl expressions sb
     sb.ToString();
 
-  let csContext = 
-    new TemplatesExportTemplateContextCSharpContext (
-      context = "TypeMember, TypeAndNamespace",
-      minimumLanguageVersion = 2.0M
-    )
+  
     
-  let vbContext = 
-    new TemplatesExportTemplateContextVisualBasicContext (
-      context = "TypeMember, TypeAndNamespace",
-      minimumLanguageVersion = 2.0M
-    )
+  
 
   // first, process structures
-  for (s,exprs) in cSharpStructureTemplates do
-    let t = new TemplatesExportTemplate(shortcut=s)
-    let vars = new List<TemplatesExportTemplateVariable>()
-    t.description <- String.Empty
-    t.reformat <- "True"
-    t.uid <- newGuid()
-    t.text <- printExpressions exprs vars String.Empty
-
-    t.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
-    t.Variables <- vars.ToArray()
-    templates.Add t
-  done
-
-  for (s,exprs) in vbStructureTemplates do
-    let t = new TemplatesExportTemplate(shortcut=s)
-    let vars = new List<TemplatesExportTemplateVariable>()
-    t.description <- String.Empty
-    t.reformat <- "True"
-    t.uid <- newGuid()
-    t.text <- printExpressions exprs vars String.Empty
-    t.Context <- new TemplatesExportTemplateContext(VisualBasicContext = vbContext)
-    t.Variables <- vars.ToArray()
-    templates.Add t
-  done
-
-  // now process members
-  for (s,doc,exprs) in cSharpMemberTemplates do
-    // simple types; methods can be void
-    let types = (if Char.ToLower(s.Chars(0)) ='m' then ("", "void", "") :: csharpTypes else csharpTypes)
-    for (tk,tv,defValue) in types do
-      let t = new TemplatesExportTemplate(shortcut=(s+tk))
+  if renderCSharp then
+    for (s,exprs) in cSharpStructureTemplates do
+      let t = new TemplatesExportTemplate(shortcut=s)
       let vars = new List<TemplatesExportTemplateVariable>()
-      t.description <- printExpressions doc vars defValue
+      t.description <- String.Empty
       t.reformat <- "True"
-      t.shortenQualifiedReferences <- "True"
-      t.text <- (printExpressions exprs vars defValue)
-                .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
       t.uid <- newGuid()
+      t.text <- printExpressions exprs vars String.Empty
+
       t.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
       t.Variables <- vars.ToArray()
       templates.Add t
     done
 
-    // generically specialized types
-    for (gk,gv,genArgCount) in dotNetGenericTypes do
-      match genArgCount with
-      | 1 ->
-        for (tk,tv,_) in csharpTypes do
-          let t0 = new TemplatesExportTemplate(shortcut=s+gk+tk)
-          let vars0 = new List<TemplatesExportTemplateVariable>()
-          let genericArgs = gv + "<" + tv + ">"
-          let defValue = "new " + genericArgs + "()"
-          t0.description <- (printExpressions doc vars0 defValue).Replace("$typename$", genericArgs)
-          t0.reformat <- "True"
-          t0.shortenQualifiedReferences <- "True"
-          t0.text <- (printExpressions exprs vars0 defValue).Replace("$typename$", genericArgs)
-          t0.uid <- newGuid()
-          t0.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
-          t0.Variables <- vars0.ToArray()
-          templates.Add t0
-        done
-      | 2 -> // maybe this is not such a good idea because we get n^2 templates
-        for ((tk0,tv0,_),(tk1,tv1,_)) in pairs csharpTypes do
-          let t = new TemplatesExportTemplate(shortcut=s+gk+tk0+tk1)
-          let vars = List<TemplatesExportTemplateVariable>()
-          let genericArgs = gv + "<" + tv0 + "," + tv1 + ">"
-          let defValue = "new " + genericArgs + "()"
-          t.description <- (printExpressions doc vars defValue).Replace("$typename$", genericArgs)
-          t.reformat <- "True"
-          t.shortenQualifiedReferences <- "True"
-          t.text <- (printExpressions exprs vars defValue).Replace("$typename$", genericArgs)
-          t.uid <- newGuid()
-          t.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
-          t.Variables <- vars.ToArray()
-          templates.Add t
-        done
-      | _ -> raise <| new Exception("We don't support this few/many args")
+  if renderVBNET then
+    for (s,exprs) in vbStructureTemplates do
+      let t = new TemplatesExportTemplate(shortcut=s)
+      let vars = new List<TemplatesExportTemplateVariable>()
+      t.description <- String.Empty
+      t.reformat <- "False" // critical difference with C#!!!
+      t.uid <- newGuid()
+      t.text <- printExpressions exprs vars String.Empty
+      t.Context <- new TemplatesExportTemplateContext(VBContext = vbContext)
+      t.Variables <- vars.ToArray()
+      templates.Add t
     done
-  done
+
+  // now process members
+  if renderCSharp then
+    for (s,doc,exprs) in cSharpMemberTemplates do
+      // simple types; methods can be void
+      let types = (if Char.ToLower(s.Chars(0)) ='m' then ("", "void", "") :: csharpTypes else csharpTypes)
+      for (tk,tv,defValue) in types do
+        let t = new TemplatesExportTemplate(shortcut=(s+tk))
+        let vars = new List<TemplatesExportTemplateVariable>()
+        t.description <- printExpressions doc vars defValue
+        t.reformat <- "True"
+        t.shortenQualifiedReferences <- "True"
+        t.text <- (printExpressions exprs vars defValue)
+                  .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
+        t.uid <- newGuid()
+        t.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
+        t.Variables <- vars.ToArray()
+        templates.Add t
+      done
+
+      // generically specialized types
+      for (gk,gv,genArgCount) in dotNetGenericTypes do
+        match genArgCount with
+        | 1 ->
+          for (tk,tv,_) in csharpTypes do
+            let t0 = new TemplatesExportTemplate(shortcut=s+gk+tk)
+            let vars0 = new List<TemplatesExportTemplateVariable>()
+            let genericArgs = gv + "<" + tv + ">"
+            let defValue = "new " + genericArgs + "()"
+            t0.description <- (printExpressions doc vars0 defValue).Replace("$typename$", genericArgs)
+            t0.reformat <- "True"
+            t0.shortenQualifiedReferences <- "True"
+            t0.text <- (printExpressions exprs vars0 defValue).Replace("$typename$", genericArgs)
+            t0.uid <- newGuid()
+            t0.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
+            t0.Variables <- vars0.ToArray()
+            templates.Add t0
+          done
+        | 2 -> // maybe this is not such a good idea because we get n^2 templates
+          for ((tk0,tv0,_),(tk1,tv1,_)) in pairs csharpTypes do
+            let t = new TemplatesExportTemplate(shortcut=s+gk+tk0+tk1)
+            let vars = List<TemplatesExportTemplateVariable>()
+            let genericArgs = gv + "<" + tv0 + "," + tv1 + ">"
+            let defValue = "new " + genericArgs + "()"
+            t.description <- (printExpressions doc vars defValue).Replace("$typename$", genericArgs)
+            t.reformat <- "True"
+            t.shortenQualifiedReferences <- "True"
+            t.text <- (printExpressions exprs vars defValue).Replace("$typename$", genericArgs)
+            t.uid <- newGuid()
+            t.Context <- new TemplatesExportTemplateContext(CSharpContext = csContext)
+            t.Variables <- vars.ToArray()
+            templates.Add t
+          done
+        | _ -> raise <| new Exception("We don't support this few/many args")
+      done
+    done
+
+  if renderVBNET then
+    for (s,doc,exprs) in vbMemberTemplates do
+      // simple types; methods can be void
+      for (tk,tv,defValue) in vbTypes do
+        let t = new TemplatesExportTemplate(shortcut=(s+tk))
+        let vars = new List<TemplatesExportTemplateVariable>()
+        t.description <- printExpressions doc vars defValue
+        t.reformat <- "True"
+        t.shortenQualifiedReferences <- "True"
+        t.text <- (printExpressions exprs vars defValue)
+                  .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
+        t.uid <- newGuid()
+        t.Context <- new TemplatesExportTemplateContext(VBContext = vbContext)
+        t.Variables <- vars.ToArray()
+        templates.Add t
+      done
+
+      // generically specialized types
+      for (gk,gv,genArgCount) in dotNetGenericTypes do
+        match genArgCount with
+        | 1 ->
+          for (tk,tv,_) in vbTypes do
+            let t0 = new TemplatesExportTemplate(shortcut=s+gk+tk)
+            let vars0 = new List<TemplatesExportTemplateVariable>()
+            let genericArgs = gv + "(Of " + tv + ")"
+            let defValue = "new " + genericArgs + "()"
+            t0.description <- (printExpressions doc vars0 defValue).Replace("$typename$", genericArgs)
+            t0.reformat <- "True"
+            t0.shortenQualifiedReferences <- "True"
+            t0.text <- (printExpressions exprs vars0 defValue).Replace("$typename$", genericArgs)
+            t0.uid <- newGuid()
+            t0.Context <- new TemplatesExportTemplateContext(VBContext = vbContext)
+            t0.Variables <- vars0.ToArray()
+            templates.Add t0
+          done
+        | 2 -> // maybe this is not such a good idea because we get n^2 templates
+          for ((tk0,tv0,_),(tk1,tv1,_)) in pairs vbTypes do
+            let t = new TemplatesExportTemplate(shortcut=s+gk+tk0+tk1)
+            let vars = List<TemplatesExportTemplateVariable>()
+            let genericArgs = gv + "(Of " + tv0 + ", Of" + tv1 + ")"
+            let defValue = "new " + genericArgs + "()"
+            t.description <- (printExpressions doc vars defValue).Replace("$typename$", genericArgs)
+            t.reformat <- "True"
+            t.shortenQualifiedReferences <- "True"
+            t.text <- (printExpressions exprs vars defValue).Replace("$typename$", genericArgs)
+            t.uid <- newGuid()
+            t.Context <- new TemplatesExportTemplateContext(VBContext = vbContext)
+            t.Variables <- vars.ToArray()
+            templates.Add t
+          done
+        | _ -> raise <| new Exception("We don't support this few/many args")
+      done
+    done
   
   te.Template <- templates.ToArray()
 
