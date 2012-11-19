@@ -10,6 +10,8 @@ open CSharp
 open VB
 open Java
 
+let version = "0.1"
+
 type StringBuilder with
   member x.AppendString (s:string) = ignore <| x.Append s
   member x.AppendStrings (ss:string list) =
@@ -169,7 +171,7 @@ let renderReSharper() =
   
   te.Template <- templates.ToArray()
 
-  let filename = "ReSharperMnemonics.xml"
+  let filename = "ReSharperMnemonics." + version + ".xml"
   File.Delete(filename)
   let xs = new XmlSerializer(te.GetType())
   use fs = new FileStream(filename, FileMode.Create, FileAccess.Write)
@@ -258,7 +260,7 @@ let renderJava() =
   File.WriteAllText(".\\jar\\" + ideaFileName, String.Empty)
 
   // now wrap it in a jar. use of 3rd-party zipper unavoidable
-  let jarFileName = "IdeaMnemonics.jar"
+  let jarFileName = "IdeaMnemonics." + version + ".jar"
   File.Delete jarFileName
   let jarFile = new ZipFile(jarFileName)
   let templatesDir = jarFile.AddDirectory(".\\jar")

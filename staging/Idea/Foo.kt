@@ -1,3 +1,4 @@
-public enum class <#<name>#> {
-    <#<body>#>
+enum class
+{
+
 }

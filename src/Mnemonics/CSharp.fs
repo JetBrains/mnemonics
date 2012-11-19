@@ -252,37 +252,37 @@ let cSharpMemberTemplates =
         ]
       ]
     )
-    (
-      "d",
-      [
-        Text "A dependency property of type "
-        FixedType
-        Text "."
-      ],
-      [
-        Text "public "
-        FixedType
-        Text " "
-        Constant("propname", "MyProperty")
-        Scope [
-          Text "get "
-          Scope [
-            Text "return ("
-            FixedType
-            Text ")GetValue("
-            Constant("propname", "MyProperty")
-            Text "Property);"
-          ]
-          Text "set "
-          Scope [
-            Text "SetValue("
-            Constant("propname", "MyProperty")
-            Text "Property, value);"
-          ]
-        ]
-        Text "public static readonly System.Windows.DependencyProperty "
-        Constant("propname", "MyProperty")
-        Text "Property ="
-      ]
-    )
+//    (
+//      "d",
+//      [
+//        Text "A dependency property of type "
+//        FixedType
+//        Text "."
+//      ],
+//      [
+//        Text "public "
+//        FixedType
+//        Text " "
+//        Constant("propname", "MyProperty")
+//        Scope [
+//          Text "get "
+//          Scope [
+//            Text "return ("
+//            FixedType
+//            Text ")GetValue("
+//            Constant("propname", "MyProperty")
+//            Text "Property);"
+//          ]
+//          Text "set "
+//          Scope [
+//            Text "SetValue("
+//            Constant("propname", "MyProperty")
+//            Text "Property, value);"
+//          ]
+//        ]
+//        Text "public static readonly System.Windows.DependencyProperty "
+//        Constant("propname", "MyProperty")
+//        Text "Property ="
+//      ]
+//    )
   ]
