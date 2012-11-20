@@ -10,7 +10,7 @@ open CSharp
 open VB
 open Java
 
-let version = "0.1"
+let version = "0.2"
 
 type StringBuilder with
   member x.AppendString (s:string) = ignore <| x.Append s
@@ -31,7 +31,7 @@ let renderReSharper() =
   let templates = new List<TemplatesExportTemplate>()
 
   // debugging switches :)
-  let renderCSharp, renderVBNET = false, true
+  let renderCSharp, renderVBNET = true, true
 
   let printExpressions expressions (vars:List<TemplatesExportTemplateVariable>) defValue =
     let rec impl exps (builder:StringBuilder) =
