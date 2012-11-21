@@ -4,14 +4,15 @@ open Types
 
 let javaPrimitiveTypes =
   [
-    ("c", "char")
-    ("f", "float")
-    ("by", "byte")
-    ("d", "double")
-    ("i", "int")
-    ("s", "String")
-    ("l", "long")
-    ("t", "java.lang.Date")
+    ("c", "char", "''")
+    ("f", "float", "0.0f")
+    ("b", "boolean", "false")
+    ("by", "byte", "0")
+    ("d", "double", "0.0")
+    ("i", "int", "0")
+    ("s", "String", "\"\"")
+    ("l", "long", "0")
+    ("t", "java.util.Date", "new java.util.Date()")
   ]
 
 let javaGenericTypes =

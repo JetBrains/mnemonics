@@ -1,6 +1,7 @@
 ﻿open System
 open System.Collections.Generic
 open System.IO
+open System.Linq
 open System.Text
 open System.Xml.Serialization
 open Ionic.Zip
@@ -10,7 +11,10 @@ open CSharp
 open VB
 open Java
 
-let version = "0.2"
+let version = "0.3"
+
+let entity10 = "&#10;"
+let ideaLineBreak = System.Web.HttpUtility.HtmlDecode entity10
 
 type StringBuilder with
   member x.AppendString (s:string) = ignore <| x.Append s
@@ -59,7 +63,7 @@ let renderReSharper() =
           v.name <- name
           v.initialRange <- 0
           v.expression <- "constant(\"" + text + "\")"
-          vars.Add(v)
+          if not(vars.Any(fun v' -> v.name.Equals(v'.name))) then vars.Add(v)
         end
         builder.AppendStrings ["$"; name; "$"]
         impl t builder
@@ -253,6 +257,7 @@ let renderJava() =
         v.expression <- value
         v.alwaysStopAt <- true
         vars.Add(v)
+        if not (vars.Any(fun v' -> v.name.Equals(v'.name))) then vars.Add(v)
         builder.AppendStrings ["$"; name; "$"]
         impl t builder
 
@@ -260,17 +265,18 @@ let renderJava() =
         if name <> "END" then begin
           let v = new templateSetTemplateVariable()
           v.name <- name
-          v.defaultValue <- text
+          v.defaultValue <- "\"" + text + "\"" // note the quotes
+          v.expression <- String.Empty
           v.alwaysStopAt <- true
-          vars.Add(v)
+          if not (vars.Any(fun v' -> v.name.Equals(v'.name))) then vars.Add(v)
         end
         builder.AppendStrings ["$"; name; "$"]
         impl t builder
       
       | Scope(content) :: t ->
-        builder.AppendString "{"
+        builder.AppendStrings [ideaLineBreak; "{"; ideaLineBreak]
         impl content builder
-        builder.AppendString "}"
+        builder.AppendStrings [ideaLineBreak; "}"]
         impl t builder
 
       | FixedType :: t ->
@@ -287,6 +293,7 @@ let renderJava() =
   let templates = new List<templateSetTemplate>()
   ts.group <- "user" // todo: investigate 'properietary' groups
   
+  // here go the structures
   for (s, exprs) in javaStructureTemplates do
     let t = new templateSetTemplate(name=s)
     let vars = new List<templateSetTemplateVariable>()
@@ -295,7 +302,30 @@ let renderJava() =
     t.toShortenFQNames <- true
     t.context <- javaDeclContext
     t.value <- (printExpressions exprs vars String.Empty)
+    t.variable <- vars.ToArray()
     templates.Add t
+  done
+
+  // and now the members
+  for (s, doc, exprs) in javaMemberTemplates do
+    // simple types; methods can be void
+    let types = if Char.ToLower(s.Chars(0)) = 'm' 
+                then ("", "void", "") :: javaPrimitiveTypes
+                else javaPrimitiveTypes
+    for (tk,tv,defValue) in types do
+      let t = new templateSetTemplate()
+      let vars = new List<templateSetTemplateVariable>()
+      t.name <- s + tk
+      t.description <- (printExpressions doc vars defValue)
+                       .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
+      t.toReformat <- true
+      t.toShortenFQNames <- true
+      t.context <- javaDeclContext
+      t.value <- (printExpressions exprs vars defValue)
+                 .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
+      t.variable <- vars.ToArray()
+      templates.Add t
+    done
   done
 
   ts.template <- templates.ToArray()
@@ -305,8 +335,10 @@ let renderJava() =
   Directory.CreateDirectory(".\\jar") |> ignore
   Directory.CreateDirectory(".\\jar\\templates") |> ignore
   let xs = new XmlSerializer(ts.GetType())
-  use fs = new FileStream(filename, FileMode.Create, FileAccess.Write)
-  xs.Serialize(fs, ts)
+  use sw = new StringWriter()
+  xs.Serialize(sw, ts)
+  let textToWrite = sw.ToString().Replace("&#xA;", entity10) // .NET knows better :)
+  File.WriteAllText(filename, textToWrite)
 
   let ideaFileName = "IntelliJ IDEA Global Settings"
   File.WriteAllText(".\\jar\\" + ideaFileName, String.Empty)

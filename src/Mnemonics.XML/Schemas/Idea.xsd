@@ -1,41 +1,41 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:element name="templateSet">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="template" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="variable">
-                <xs:complexType>
-                  <xs:attribute name="name" type="xs:string" use="required" />
-                  <xs:attribute name="expression" type="xs:string" use="required" />
-                  <xs:attribute name="defaultValue" type="xs:string" use="required" />
-                  <xs:attribute name="alwaysStopAt" type="xs:boolean" use="required" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="context">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element maxOccurs="unbounded" name="option">
-                      <xs:complexType>
-                        <xs:attribute name="name" type="xs:string" use="required" />
-                        <xs:attribute name="value" type="xs:boolean" use="required" />
-                      </xs:complexType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-            <xs:attribute name="name" type="xs:string" use="required" />
-            <xs:attribute name="value" type="xs:string" use="required" />
-            <xs:attribute name="description" type="xs:string" use="required" />
-            <xs:attribute name="toReformat" type="xs:boolean" use="required" />
-            <xs:attribute name="toShortenFQNames" type="xs:boolean" use="required" />
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-      <xs:attribute name="group" type="xs:string" use="required" />
-    </xs:complexType>
-  </xs:element>
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="templateSet">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="template" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="variable" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="name" type="xs:string" use="required"/>
+									<xs:attribute name="expression" type="xs:string" use="required"/>
+									<xs:attribute name="defaultValue" type="xs:string" use="required"/>
+									<xs:attribute name="alwaysStopAt" type="xs:boolean" use="required"/>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="context">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="option" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="name" type="xs:string" use="required"/>
+												<xs:attribute name="value" type="xs:boolean" use="required"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="name" type="xs:string" use="required"/>
+						<xs:attribute name="value" type="xs:string" use="required"/>
+						<xs:attribute name="description" type="xs:string" use="required"/>
+						<xs:attribute name="toReformat" type="xs:boolean" use="required"/>
+						<xs:attribute name="toShortenFQNames" type="xs:boolean" use="required"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="group" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

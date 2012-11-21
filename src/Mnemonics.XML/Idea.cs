@@ -59,7 +59,7 @@ public partial class templateSet {
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
 public partial class templateSetTemplate {
     
-    private templateSetTemplateVariable variableField;
+    private templateSetTemplateVariable[] variableField;
     
     private templateSetTemplateOption[] contextField;
     
@@ -74,7 +74,8 @@ public partial class templateSetTemplate {
     private bool toShortenFQNamesField;
     
     /// <remarks/>
-    public templateSetTemplateVariable variable {
+    [System.Xml.Serialization.XmlElementAttribute("variable")]
+    public templateSetTemplateVariable[] variable {
         get {
             return this.variableField;
         }
