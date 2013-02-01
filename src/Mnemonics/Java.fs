@@ -2,6 +2,9 @@
 
 open Types
 
+let entity10 = "&#10;"
+let ideaLineBreak = System.Web.HttpUtility.HtmlDecode entity10
+
 let javaPrimitiveTypes =
   [
     ("c", "char", "''")

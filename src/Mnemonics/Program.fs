@@ -10,11 +10,9 @@ open DotNet
 open CSharp
 open VB
 open Java
+open Kotlin
 
-let version = "0.3"
-
-let entity10 = "&#10;"
-let ideaLineBreak = System.Web.HttpUtility.HtmlDecode entity10
+let version = "0.4"
 
 type StringBuilder with
   member x.AppendString (s:string) = ignore <| x.Append s
@@ -82,10 +80,6 @@ let renderReSharper() =
     let sb = new StringBuilder()
     impl expressions sb
     sb.ToString();
-
-  
-    
-  
 
   // first, process structures
   if renderCSharp then
@@ -239,6 +233,10 @@ let renderReSharper() =
 let renderJava() =
   let javaDeclContext =
     [| new templateSetTemplateOption(name="JAVA_DECLARATION",value=true) |]
+    
+  let kotlinDeclContext =
+    [| new templateSetTemplateOption(name="KOTLIN_EXPRESSION",value=true) |]
+
 
   let printExpressions expressions (vars:List<templateSetTemplateVariable>) defValue =
     let rec impl exps (builder:StringBuilder) =
@@ -292,8 +290,10 @@ let renderJava() =
   let ts = new templateSet()
   let templates = new List<templateSetTemplate>()
   ts.group <- "user" // todo: investigate 'properietary' groups
-  
-  // here go the structures
+
+  (***************** JAVA **********************************************)
+
+  // java structures
   for (s, exprs) in javaStructureTemplates do
     let t = new templateSetTemplate(name=s)
     let vars = new List<templateSetTemplateVariable>()
@@ -306,7 +306,7 @@ let renderJava() =
     templates.Add t
   done
 
-  // and now the members
+  // java members
   for (s, doc, exprs) in javaMemberTemplates do
     // simple types; methods can be void
     let types = if Char.ToLower(s.Chars(0)) = 'm' 
@@ -317,16 +317,54 @@ let renderJava() =
       let vars = new List<templateSetTemplateVariable>()
       t.name <- s + tk
       t.description <- (printExpressions doc vars defValue)
-                       .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
+                        .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
       t.toReformat <- true
       t.toShortenFQNames <- true
       t.context <- javaDeclContext
       t.value <- (printExpressions exprs vars defValue)
-                 .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
+                  .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
       t.variable <- vars.ToArray()
       templates.Add t
     done
   done
+
+  (***************** KOTLIN ********************************************)
+
+  // structures
+  for (s, exprs) in kotlinStructureTemplates do
+    let t = new templateSetTemplate(name=s)
+    let vars = new List<templateSetTemplateVariable>()
+    t.description <- String.Empty
+    t.toReformat <- true
+    t.toShortenFQNames <- true
+    t.context <- kotlinDeclContext
+    t.value <- (printExpressions exprs vars String.Empty)
+    t.variable <- vars.ToArray()
+    templates.Add t
+  done
+
+  // members
+  for (s, doc, exprs) in kotlinMemberTemplates do
+    // simple types; methods can be void
+    let types = if Char.ToLower(s.Chars(0)) = 'm' 
+                then ("", "Unit", "") :: kotlinPrimitiveTypes
+                else kotlinPrimitiveTypes
+    for (tk,tv,defValue) in types do
+      let t = new templateSetTemplate()
+      let vars = new List<templateSetTemplateVariable>()
+      t.name <- s + tk
+      t.description <- (printExpressions doc vars defValue)
+                        .Replace("$typename$", if String.IsNullOrEmpty(tv) then "Unit" else tv)
+      t.toReformat <- true
+      t.toShortenFQNames <- true
+      t.context <- kotlinDeclContext
+      t.value <- (printExpressions exprs vars defValue)
+                  .Replace("$typename$", if String.IsNullOrEmpty(tv) then "Unit" else tv)
+      t.variable <- vars.ToArray()
+      templates.Add t
+    done
+  done
+
 
   ts.template <- templates.ToArray()
 

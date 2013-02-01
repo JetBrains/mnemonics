@@ -13,4 +13,5 @@ let endConstant = Constant ("END", "")
 let semiColon = Text ";"
 let className = Constant ("CLASSNAME", "MyClass")
 let interfaceName = Constant ("INTERFACENAME", "MyInterface")
+let traitName = Constant("TRAITNAME", "MyTrait")
 let propName = Constant("propname", "MyProperty")
