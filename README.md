@@ -21,6 +21,12 @@ This project aims to support the following programming languages:
 * Ruby (RubyMine)
 * Objective-C (appCode)
 
+Note: Java and Kotlin appear to conflict as per [this issue](http://youtrack.jetbrains.com/issue/IDEA-100302).
+
 Installation Notes
 ==================
-TODO
+Installing mnemonics is simple.
+
+- Go to the `downloads` directory and download the file related to your IDE.
+- **ReSharper**: open **ReSharper|Templates Explorer**, press the **Import...** button, select the XML file. You're done. Note that on first use, VS might freeze for a while - this is normal and only happens once.
+- **IntelliJ IDEA:** open **File|Import Settings...**, navigate to the directory with the `.jar` file, select it, press OK. IDEA will ask you to restart.
