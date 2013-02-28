@@ -393,5 +393,5 @@ let renderJava() =
 let main argv = 
     renderReSharper()
     renderJava()
-    Console.ReadKey() |> ignore
+    // Console.ReadKey() |> ignore
     0
