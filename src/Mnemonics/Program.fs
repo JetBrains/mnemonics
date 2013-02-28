@@ -221,7 +221,7 @@ let renderReSharper() =
   
   te.Template <- templates.ToArray()
 
-  let filename = "ReSharperMnemonics." + version + ".xml"
+  let filename = "ReSharperMnemonics.xml"
   File.Delete(filename)
   let xs = new XmlSerializer(te.GetType())
   use fs = new FileStream(filename, FileMode.Create, FileAccess.Write)
@@ -287,11 +287,22 @@ let renderJava() =
     sb.ToString();
 
 
-  let ts = new templateSet()
-  let templates = new List<templateSetTemplate>()
-  ts.group <- "user" // todo: investigate 'properietary' groups
+  // this saves the template set under a filename
+  let saveFile filename ts =
+    let xs = new XmlSerializer(ts.GetType())
+    use sw = new StringWriter()
+    xs.Serialize(sw, ts)
+    let textToWrite = sw.ToString().Replace("&#xA;", entity10) // .NET knows better :)
+    File.WriteAllText(filename, textToWrite)
+
+  Directory.CreateDirectory(".\\jar") |> ignore
+  Directory.CreateDirectory(".\\jar\\templates") |> ignore
 
   (***************** JAVA **********************************************)
+  let ts = new templateSet()
+  let templates = new List<templateSetTemplate>()
+  ts.group <- "mnemnics-java" // todo: investigate 'properietary' groups
+  let filename = ".\\jar\\templates\\" + ts.group + ".xml"
 
   // java structures
   for (s, exprs) in javaStructureTemplates do
@@ -328,7 +339,14 @@ let renderJava() =
     done
   done
 
+  ts.template <- templates.ToArray()
+  saveFile filename ts
+
   (***************** KOTLIN ********************************************)
+  let ts = new templateSet()
+  let templates = new List<templateSetTemplate>()
+  ts.group <- "mnemnics-kotlin" // todo: investigate 'properietary' groups
+  let filename = ".\\jar\\templates\\" + ts.group + ".xml"
 
   // structures
   for (s, exprs) in kotlinStructureTemplates do
@@ -365,24 +383,14 @@ let renderJava() =
     done
   done
 
-
   ts.template <- templates.ToArray()
-
-  let filename = ".\\jar\\templates\\user.xml"
-  // make sure directory exists
-  Directory.CreateDirectory(".\\jar") |> ignore
-  Directory.CreateDirectory(".\\jar\\templates") |> ignore
-  let xs = new XmlSerializer(ts.GetType())
-  use sw = new StringWriter()
-  xs.Serialize(sw, ts)
-  let textToWrite = sw.ToString().Replace("&#xA;", entity10) // .NET knows better :)
-  File.WriteAllText(filename, textToWrite)
+  saveFile filename ts
 
   let ideaFileName = "IntelliJ IDEA Global Settings"
   File.WriteAllText(".\\jar\\" + ideaFileName, String.Empty)
 
   // now wrap it in a jar. use of 3rd-party zipper unavoidable
-  let jarFileName = "IdeaMnemonics." + version + ".jar"
+  let jarFileName = "IdeaMnemonics.jar"
   File.Delete jarFileName
   let jarFile = new ZipFile(jarFileName)
   let templatesDir = jarFile.AddDirectory(".\\jar")
@@ -393,5 +401,5 @@ let renderJava() =
 let main argv = 
     renderReSharper()
     renderJava()
-    // Console.ReadKey() |> ignore
+    Console.ReadKey() |> ignore
     0
