@@ -12,7 +12,7 @@ open VB
 open Java
 open Kotlin
 
-let version = "0.4"
+let version = "0.5"
 
 type StringBuilder with
   member x.AppendString (s:string) = ignore <| x.Append s
@@ -386,6 +386,7 @@ let renderJava() =
   ts.template <- templates.ToArray()
   saveFile filename ts
 
+  // TODO: java and kotlin generics
   let ideaFileName = "IntelliJ IDEA Global Settings"
   File.WriteAllText(".\\jar\\" + ideaFileName, String.Empty)
 
