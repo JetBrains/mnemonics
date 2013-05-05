@@ -13,15 +13,13 @@ The vertical bar above indicates where the caret will end up once you're done ed
 
 Supported Languages
 ===================
-This project aims to support the following programming languages:
+The project aims to support the following languages - currently supported ones are in **bold**:
 
-* C# and VB.NET (ReSharper)
-* Java, Scala, Kotlin (IntelliJ IDEA)
+* **C# and VB.NET (ReSharper)**
+* **Java**, Scala, **Kotlin** (IntelliJ IDEA)
 * Python (PyCharm)
 * Ruby (RubyMine)
 * Objective-C (appCode)
-
-Note: Java and Kotlin appear to conflict as per [this issue](http://youtrack.jetbrains.com/issue/IDEA-100302).
 
 Installation Notes
 ==================
