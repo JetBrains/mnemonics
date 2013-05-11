@@ -22,6 +22,7 @@ let csharpTypes =
     ("u", "uint", "0")
     ("g", "System.Guid", "System.Guid.NewGuid()")
     ("t", "System.DateTime", "System.DateTime.UtcNow")
+    ("sb", "System.Text.StringBuilder", "new System.Text.StringBuilder")
   ]
 
 let cSharpStructureTemplates =
