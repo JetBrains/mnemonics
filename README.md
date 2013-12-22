@@ -16,14 +16,12 @@ Similarly, `C` will create a static class, `m` creates a method, `M` creates a s
 * `mf` - generates a method that returns `float`
 * `ms` - a method that returns `string`
 * `m~s` - a method that returns an `IEnumerable<string>`
-* `mh.s` - a method that returns a `HashSet<string>`
 
 This extends to more complex examples such as:
 
 * `pgh.sb` - a property with only a getter, of type `HashSet<StringBuilder>`
-* `prl.i` - an auto-property with a private setter, of type `List<int>`
 
-Please take a look through the templates in ReSharper or IntelliJ to see the full list.
+Please take a look through the templates in ReSharper or IntelliJ to see the full list. Note that currently the shortcuts that include a period (`.`) do *not* work, and are unlikely to work in the future.
 
 Supported Languages
 ===================
@@ -41,6 +39,6 @@ Installing mnemonics is simple.
 
 - Go to the `downloads` directory and download the file related to your IDE.
 - **ReSharper:**
- - 8.0: Look for the **mnemonics** extension package in the **ReSharper|Extension Manager**.
+ - 8.0 and later: Look for the **mnemonics** extension package in the **ReSharper|Extension Manager**.
  - pre-8.0: Open **ReSharper|Templates Explorer**, press the **Import...** button, select the XML file. You're done. Note that on first use, VS might freeze for a while - this is normal and only happens once.
 - **IntelliJ IDEA:** open **File|Import Settings...**, navigate to the directory with the `.jar` file, select it, press OK. IDEA will ask you to restart.
