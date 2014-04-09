@@ -31,7 +31,7 @@ let javaStructureTemplates =
     (
       "c",
       [
-        Text "public class "
+        Text "class "
         Constant ("CLASSNAME", "MyClass")
         Scope [
           endConstant
@@ -39,9 +39,9 @@ let javaStructureTemplates =
       ]
     )
     (
-      "C",
+      "C", // todo: in java, only inner classes can be static
       [
-        Text "public static class "
+        Text "static class "
         Constant ("CLASSNAME", "MyClass")
         Scope [
           endConstant

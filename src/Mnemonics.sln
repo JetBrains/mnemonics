@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mnemonics", "Mnemonics\Mnemonics.fsproj", "{910D73F5-75BA-47AA-BAAD-4434687D1E9B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mnemonics.XML", "Mnemonics.XML\Mnemonics.XML.csproj", "{384EBCF4-BD1E-40E8-8CDF-B635E411DF03}"

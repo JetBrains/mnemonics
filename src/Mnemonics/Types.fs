@@ -11,6 +11,7 @@ type Expression =
 let space = Text " "
 let endConstant = Constant ("END", "")
 let semiColon = Text ";"
+let lineBreak = Text "\n"
 let className = Constant ("CLASSNAME", "MyClass")
 let interfaceName = Constant ("INTERFACENAME", "MyInterface")
 let traitName = Constant("TRAITNAME", "MyTrait")

@@ -11,6 +11,7 @@ open CSharp
 open VB
 open Java
 open Kotlin
+open CPlusPlus
 
 let version = "0.5"
 
@@ -229,13 +230,17 @@ let renderReSharper() =
 
   printfn "%A ReSharper templates exported" (te.Template.Length)
 
-/// Renders a JAR for Java, Kotlin and Scala
+/// Renders a JAR for Java, Kotlin, Scala and C++
 let renderJava() =
   let javaDeclContext =
     [| new templateSetTemplateOption(name="JAVA_DECLARATION",value=true) |]
     
   let kotlinDeclContext =
     [| new templateSetTemplateOption(name="KOTLIN_EXPRESSION",value=true) |]
+
+  // unverified
+  let cppDeclContext =
+    [| new templateSetTemplateOption(name="OC_DECLARATION_CPP", value=true) |]
 
 
   let printExpressions expressions (vars:List<templateSetTemplateVariable>) defValue =
@@ -345,7 +350,7 @@ let renderJava() =
   (***************** KOTLIN ********************************************)
   let ts = new templateSet()
   let templates = new List<templateSetTemplate>()
-  ts.group <- "mnemnics-kotlin" // todo: investigate 'properietary' groups
+  ts.group <- "mnemonics-kotlin" // todo: investigate 'properietary' groups
   let filename = ".\\jar\\templates\\" + ts.group + ".xml"
 
   // structures
@@ -378,6 +383,50 @@ let renderJava() =
       t.context <- kotlinDeclContext
       t.value <- (printExpressions exprs vars defValue)
                   .Replace("$typename$", if String.IsNullOrEmpty(tv) then "Unit" else tv)
+      t.variable <- vars.ToArray()
+      templates.Add t
+    done
+  done
+
+  ts.template <- templates.ToArray()
+  saveFile filename ts
+
+  (*************************** C++ (be afraid!) *****************************************)
+  let ts = new templateSet();
+  let templates = new List<templateSetTemplate>()
+  ts.group <- "mnemonics-cpp"
+  let filename = ".\\jar\\templates\\" + ts.group + ".xml"
+
+  // structures (note these end with semi-colons)
+  for (s, exprs) in cppStructureTemplates do
+    let t = new templateSetTemplate(name=s)
+    let vars = new List<templateSetTemplateVariable>()
+    t.description <- String.Empty
+    t.toReformat <- true
+    t.toShortenFQNames <- true
+    t.context <- cppDeclContext
+    t.value <- (printExpressions exprs vars String.Empty)
+    t.variable <- vars.ToArray()
+    templates.Add t
+  done
+
+  // members
+  for (s, doc, exprs) in cppMemberTemplates do
+    // simple types; methods can be void
+    let types = if Char.ToLower(s.Chars(0)) = 'm' 
+                then ("", "void", "") :: cppTypes
+                else cppTypes
+    for (tk,tv,defValue) in types do
+      let t = new templateSetTemplate()
+      let vars = new List<templateSetTemplateVariable>()
+      t.name <- s + tk
+      t.description <- (printExpressions doc vars defValue)
+                        .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
+      t.toReformat <- true
+      t.toShortenFQNames <- true
+      t.context <- cppDeclContext
+      t.value <- (printExpressions exprs vars defValue)
+                  .Replace("$typename$", if String.IsNullOrEmpty(tv) then "void" else tv)
       t.variable <- vars.ToArray()
       templates.Add t
     done
