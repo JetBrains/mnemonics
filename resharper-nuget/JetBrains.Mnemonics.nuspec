@@ -2,18 +2,18 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
     <id>JetBrains.Mnemonics</id>
-    <title>Mnemonic Live Templates (for ReSharper 9.1)</title>
-    <version>1.1.1</version>
+    <title>Mnemonic Live Templates</title>
+    <version>1.1.2</version>
     <authors>JetBrains</authors>
     <owners>JetBrains</owners>
     <description>A set of C# and VB.NET Live Templates to quickly generate code using structured abbreviations (mnemonics), such as "c" for class, "C" for static class, "m" for method, "M" for static Method, etc.</description>
-    <releaseNotes>Support for ReSharper 9.1</releaseNotes>
+    <releaseNotes>Support for ReSharper 9.0 and above</releaseNotes>
     <projectUrl>https://github.com/JetBrains/mnemonics</projectUrl>
     <iconUrl>http://resharper-plugins.jetbrains.com/Content/Images/packageReSharper.png</iconUrl>
     <copyright>Copyright &#169; 2013-2015 JetBrains, s.r.o</copyright>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <dependencies>
-      <dependency id="Wave" version="[2.0]" />
+      <dependency id="Wave" version="1.0" />
     </dependencies>
     <tags>resharper templates mnemonics</tags>
   </metadata>
