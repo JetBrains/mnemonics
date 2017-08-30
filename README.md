@@ -1,3 +1,5 @@
+[![official JetBrains project](http://jb.gg/badges/official-flat-square.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+
 Mnemonics
 =========
 Mnemonics are templates for ReSharper and IntelliJ that let you quickly generate code and data structures by typing in names which are based on mnemonics - a structured abbreviation of the code you're trying to create.
