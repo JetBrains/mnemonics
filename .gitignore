@@ -51,4 +51,4 @@ _ReSharper*/
 ~$*
 
 #generated parser files should not be added!
-/src/fsharper/Psi.FSharp/src/Gen
+/src/packages
