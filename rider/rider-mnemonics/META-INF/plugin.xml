@@ -1,0 +1,10 @@
+<idea-plugin url="https://github.com/JetBrains/mnemonics">
+  <id>JetBrains.mnemonics</id>
+  <name>Mnemonic Live Templates</name>
+  <description>A set of C# and VB.NET Live Templates to quickly generate code using structured abbreviations (mnemonics), such as "c" for class, "C" for static class, "m" for method, "M" for static Method, etc.</description>
+  <version>1.1.2</version>
+  <vendor url="https://www.jetbrains.com">JetBrains</vendor>
+  <idea-version since-build="172.4144" />
+  <extensions defaultExtensionNs="com.intellij" />
+  <depends>com.intellij.modules.rider</depends>
+</idea-plugin>
